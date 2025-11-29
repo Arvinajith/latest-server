@@ -16,11 +16,26 @@ import uploadRoutes from './routes/uploadRoutes.js';
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://classy-torte-30d245.netlify.app', // Netlify frontend
+];
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // Allow mobile apps / Postman
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS blocked: ' + origin));
+    }
+  },
   credentials: true,
 };
+
 app.use(cors(corsOptions));
+
 
 // Security headers
 app.use(helmet());
